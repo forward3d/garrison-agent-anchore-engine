@@ -1,0 +1,29 @@
+Garrison Agent - Anchore Engine
+--
+
+This is a part of the [Garrison](https://github.com/forward3d/garrison) security project. This agent provides CVE checks.
+
+### Checks Provided
+
+| Function Name | Description  |
+| ------------- | ------------- |
+| `check_images` | Alerts for images with vulnerabilities |
+
+
+### Installation & Example
+
+Docker Hub - https://hub.docker.com/r/forward3d/garrison-agent-anchore-engine/
+
+    docker pull forward3d/garrison-agent-anchore-engine
+    docker run --rm -e "GARRISON_URL=https://garrison.internal.acme.com" -e "GARRISON_ANCHORE_URL=http://anchore-api.internal.acme.com" -e "GARRISON_ANCHORE_USER=admin" -e "GARRISON_ANCHORE_PASS=foobar" forward3d/garrison-agent-anchore-engine check_images
+
+### Agent Specific Configuration
+
+These are additional specific configuration options for this agent. [Global agent configurations](https://github.com/forward3d/garrison#global-configuration-options) still apply.
+
+| Environmental Variable  | Default | Expects |
+| ------------- | ------------- | ------------- |
+| `GARRISON_ANCHORE_URL`  | | Full URL to the Anchore API eg. `https://anchore-api.internal.acme.com/v1` |
+| `GARRISON_ANCHORE_USER` | | Anchore API Username |
+| `GARRISON_ANCHORE_PASS` | | Anchore API Password |
+| `GARRISON_ANCHORE_VULN_TYPE` | `all` | The vulnerability type you want to include, usual options are `os`, `non-os`, `all` |
