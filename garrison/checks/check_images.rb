@@ -48,7 +48,7 @@ module Garrison
       def raise_alert(image, vulnerability)
         alert(
           name: 'Docker Image Vulnerability',
-          external_severity: vulnerability["severity"].downcase,
+          external_severity: AnchoreHelper.severity_to_severity(vulnerability["severity"]),
           target: image["fulltag"],
           detail: "#{vulnerability["vuln"]} - #{vulnerability["package_name"]}",
           finding: { image: image, vulnerability: vulnerability }.to_json,

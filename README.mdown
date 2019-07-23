@@ -27,3 +27,16 @@ These are additional specific configuration options for this agent. [Global agen
 | `GARRISON_ANCHORE_USER` | | Anchore API Username |
 | `GARRISON_ANCHORE_PASS` | | Anchore API Password |
 | `GARRISON_ANCHORE_VULN_TYPE` | `all` | The vulnerability type you want to include, usual options are `os`, `non-os`, `all` |
+
+### Severities
+
+This table outlines how severities from Anchore Engine are mapped to Garrison severities...
+
+| Anchore Engine Severity  | Garrison Severity |
+| ------------------------ | ----------------- |
+| `high`                   | `high`            |
+| `medium`                 | `medium`          |
+| `low`                    | `low`             |
+| `negligible`             | `info`            |
+| `unknown`                | `medium`          |
+| Any other severity       | `medium`          |
