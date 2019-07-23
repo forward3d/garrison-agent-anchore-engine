@@ -2,6 +2,10 @@ require 'bundler'
 Bundler.require(:default)
 ROOT = File.dirname(__FILE__)
 
+Dir[File.join(ROOT, 'garrison/lib/*.rb')].each do |file|
+  require file
+end
+
 Dir[File.join(ROOT, 'garrison/checks/*.rb')].each do |file|
   require file
 end
