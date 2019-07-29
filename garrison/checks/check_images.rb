@@ -9,10 +9,10 @@ module Garrison
       end
 
       def perform
-        images = fetch_images
+        images = latest_images
         Logging.debug "Retrieved #{images.count} images from Anchore Engine API"
 
-        images.each do |image|
+        images.each do |_tag, image|
           vulns = fetch_vulns(image["imageDigest"])
           next if vulns.nil? || vulns["vulnerabilities"].empty?
           vulns["vulnerabilities"].each do |vulnerability|
@@ -28,9 +28,31 @@ module Garrison
         HTTParty.get(File.join(options[:url], path), basic_auth: auth, logger: Logging, log_level: :debug)
       end
 
+      def latest_images
+        latest = {}
+
+        fetch_images.each do |image|
+          image['image_detail'].each do |detail|
+            fulltag = detail['fulltag']
+            tagts = DateTime.parse(detail['created_at'])
+
+            unless latest.include?(fulltag)
+              latest[fulltag] = detail
+            else
+              lasttagts = DateTime.parse(latest[fulltag]['created_at'])
+              if tagts >= lasttagts
+                latest[fulltag] = detail
+              end
+            end
+          end
+        end
+
+        latest
+      end
+
       def fetch_images
         Logging.info "Fetching images from Anchore Engine API"
-        get("summaries/imagetags").select { |i| i["analysis_status"] == "analyzed" }
+        get("images").select { |i| i["analysis_status"] == "analyzed" }
       end
 
       def fetch_vulns(image_digest)
