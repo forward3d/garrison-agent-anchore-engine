@@ -30,7 +30,8 @@ module Garrison
           detail: "analysis_failed",
           finding: image.to_json,
           no_repeat: true,
-          finding_id: image["fulldigest"]
+          finding_id: image["fulldigest"],
+          key_values: []
         )
       end
     end
