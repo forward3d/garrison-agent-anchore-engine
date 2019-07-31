@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.3] - 2019-07-30
+- Added check for failed analysis
+- DRYd up the Anchore API code
+
 ## [1.0.2] - 2019-07-29
 - Only look for vulnerabilities in the latest version of an image tag
 

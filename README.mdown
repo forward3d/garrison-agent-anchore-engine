@@ -8,6 +8,7 @@ This is a part of the [Garrison](https://github.com/forward3d/garrison) security
 | Function Name | Description  |
 | ------------- | ------------- |
 | `check_images` | Alerts for images with vulnerabilities |
+| `check_failed_analysis` | Alerts for images that failed to analyze |
 
 
 ### Installation & Example
@@ -23,12 +24,20 @@ These are additional specific configuration options for this agent. [Global agen
 
 | Environmental Variable  | Default | Expects |
 | ------------- | ------------- | ------------- |
-| `GARRISON_ANCHORE_URL`  | | Full URL to the Anchore API eg. `https://anchore-api.internal.acme.com/v1` |
+| `GARRISON_ANCHORE_URL`  | | Full URL to the Anchore API eg. `https://anchore-api.internal.acme.com` |
 | `GARRISON_ANCHORE_USER` | | Anchore API Username |
 | `GARRISON_ANCHORE_PASS` | | Anchore API Password |
+
+
+### Check Specific Configuration
+
+#### `check_images`
+
+| Environmental Variable  | Default | Expects |
+| ------------- | ------------- | ------------- |
 | `GARRISON_ANCHORE_VULN_TYPE` | `all` | The vulnerability type you want to include, usual options are `os`, `non-os`, `all` |
 
-### Severities
+#### Severities
 
 This table outlines how severities from Anchore Engine are mapped to Garrison severities...
 
