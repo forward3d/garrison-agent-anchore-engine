@@ -9,63 +9,28 @@ module Garrison
       end
 
       def perform
-        images = latest_images
+        anchore = AnchoreEngine.new(options[:url], options[:username], options[:password])
+
+        images = anchore.latest_images(analysis_status: "analyzed")
         Logging.debug "Retrieved #{images.count} images from Anchore Engine API"
 
         images.each do |_tag, image|
-          vulns = fetch_vulns(image["imageDigest"])
-          next if vulns.nil? || vulns["vulnerabilities"].empty?
-          vulns["vulnerabilities"].each do |vulnerability|
-            raise_alert(image, vulnerability)
+          Logging.debug "Fetching available vuln types for #{image["imageDigest"]}"
+          vuln_types = anchore.vuln_types(image["imageDigest"])
+
+          if vuln_types.include?(options[:vuln_type])
+            Logging.info "Fetching vulns for #{image["imageDigest"]}"
+            vulns = anchore.vulns(image["imageDigest"], options[:vuln_type])
+
+            next if vulns.nil? || vulns["vulnerabilities"].empty?
+            vulns["vulnerabilities"].each do |vulnerability|
+              raise_alert(image, vulnerability)
+            end
           end
         end
       end
 
       private
-
-      def get(path)
-        auth = { username: options[:username], password: options[:password] }
-        HTTParty.get(File.join(options[:url], path), basic_auth: auth, logger: Logging, log_level: :debug)
-      end
-
-      def latest_images
-        latest = {}
-
-        fetch_images.each do |image|
-          image['image_detail'].each do |detail|
-            fulltag = detail['fulltag']
-            tagts = DateTime.parse(detail['created_at'])
-
-            unless latest.include?(fulltag)
-              latest[fulltag] = detail
-            else
-              lasttagts = DateTime.parse(latest[fulltag]['created_at'])
-              if tagts >= lasttagts
-                latest[fulltag] = detail
-              end
-            end
-          end
-        end
-
-        latest
-      end
-
-      def fetch_images
-        Logging.info "Fetching images from Anchore Engine API"
-        get("images").select { |i| i["analysis_status"] == "analyzed" }
-      end
-
-      def fetch_vulns(image_digest)
-        vuln_types_path = File.join("images", image_digest, "vuln")
-        vuln_path       = File.join("images", image_digest, "vuln", options[:vuln_type])
-
-        Logging.debug "Fetching available vuln types for #{image_digest}"
-        if get(vuln_types_path).include?(options[:vuln_type])
-
-          Logging.info "Fetching vulns for #{image_digest}"
-          get(vuln_path)
-        end
-      end
 
       def raise_alert(image, vulnerability)
         alert(
